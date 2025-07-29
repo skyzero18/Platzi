@@ -1,0 +1,13 @@
+.ftx {
+    text-align: center;
+    font-size: 140%;
+    color: #ffffff;
+    background-color: #2268c2; 
+    position: fixed; 
+    left: 0; 
+    right: 0; 
+    top: 65px; 
+    overflow: hidden; 
+    white-space: nowrap;
+    padding: 5px;
+}

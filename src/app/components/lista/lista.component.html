@@ -1,0 +1,51 @@
+<div class="search-bar">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Buscar productos..."
+    [(ngModel)]="searchTerm"
+  />
+
+  <select
+    class="category-select"
+    [(ngModel)]="selectedCategory"
+  >
+    <option value="">Todas las categorías</option>
+    <option *ngFor="let cat of categorias" [value]="cat.slug">
+      {{ cat.name }}
+    </option>
+  </select>
+
+
+</div>
+
+<div class="productos">
+  <div
+    *ngFor="let producto of productosFiltrados"
+    class="producto-item"
+    (click)="selectedProducto = producto"
+  >
+    <div class="img-box">
+      <img [src]="producto.image" alt="{{ producto.nombre }}" />
+    </div>
+    <h3>{{ producto.nombre }}</h3>
+    <p class="precio">{{ producto.precio | currency }}</p>
+  </div>
+</div>
+
+<div class="detalle-overlay" *ngIf="selectedProducto" (click)="selectedProducto = null">
+  <div class="detalle-producto-grande" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="selectedProducto = null" aria-label="Cerrar">
+      &times;
+    </button>
+    <div class="detalle-img">
+      <img [src]="selectedProducto.image" alt="{{ selectedProducto.nombre }}" />
+    </div>
+    <div class="detalle-info">
+      <h3>{{ selectedProducto.nombre }}</h3>
+      <p>{{ selectedProducto.descripcion }}</p>
+      <p><strong>Categoría:</strong> {{ selectedProducto.categoria }}</p>
+      <p><strong>Precio:</strong> {{ selectedProducto.precio | currency }}</p>
+    </div>
+  </div>
+</div>

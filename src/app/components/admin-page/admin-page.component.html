@@ -1,0 +1,79 @@
+<h1>Productos</h1>
+<h3>Crea, edita y elimina productos</h3>
+
+<form [formGroup]="formulario" (ngSubmit)="onSubmit()" class="formulario-producto">
+  <label>
+    Nombre:
+    <input type="text" formControlName="nombre" />
+  </label>
+  <br />
+
+  <label>
+    Descripción:
+    <textarea formControlName="descripcion"></textarea>
+  </label>
+  <br />
+
+  <label>
+    Categoría:
+    <select formControlName="categoria">
+      <option [ngValue]="null" disabled>Selecciona una categoría</option>
+      <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+    </select>
+  </label>
+  <br />
+
+  <label>
+    Precio:
+    <input type="number" formControlName="precio" />
+  </label>
+  <br />
+
+  <label>
+    Imagen (URL):
+    <input type="text" formControlName="image" />
+  </label>
+  <br />
+
+  <button type="submit" [disabled]="!formulario.valid">
+    {{ editId ? 'Actualizar producto' : 'Agregar producto' }}
+  </button>
+</form>
+
+
+<table class="productos-table">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Categoría</th>
+      <th>Precio</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let producto of productos">
+      <td>{{ producto.nombre }}</td>
+      <td>{{ producto.categoria }}</td>
+      <td>${{ producto.precio }}</td>
+      <td class="acciones">
+        <button (click)="onEdit(producto)">Editar</button>
+        <button (click)="onDelete(producto.id)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h1>Usuarios</h1>
+<h3>Agrega nuevos usuarios</h3>
+
+<form [formGroup]="usuarioForm" (ngSubmit)="onCreateUser()" class="formulario-usuario">
+  <label>Correo:</label>
+  <input formControlName="email" type="email" />
+  
+  <label>Contraseña:</label>
+  <input formControlName="password" type="password" />
+  
+  <button type="submit">Crear usuario</button>
+</form>

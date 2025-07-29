@@ -1,0 +1,246 @@
+div {
+  /* Solo como contenedor, sin estilos visuales */
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  transition: none;
+  flex: none;
+  min-width: 0;
+}
+
+h3 {
+  margin-top: 0;
+  color: #2d3748;
+  font-size: 1.4rem;
+}
+
+p {
+  margin: 8px 0;
+  color: #4a5568;
+  font-size: 1rem;
+}
+
+img {
+  display: block;
+
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.lista-productos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.productos {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 32px;
+  margin: 32px auto;
+  width: 100%;
+  max-width: 1800px;
+  justify-items: center;
+}
+
+.producto-item {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 16px;
+  max-width: 220px;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.img-box {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #f3f3f3;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+h3 {
+  margin: 12px 0 4px 0;
+  color: #2d3748;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.precio {
+  margin: 0 0 8px 0;
+  color: #207388;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.detalle-producto {
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 240px;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 20px;
+  z-index: 10;
+  text-align: left;
+}
+
+.producto-item:hover .detalle-producto {
+  display: block;
+}
+
+.detalle-overlay {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.detalle-producto-grande {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+  padding: 48px 56px;
+  min-width: 900px;
+  max-width: 1200px;
+  min-height: 600px;
+  display: flex;
+  gap: 56px;
+  align-items: stretch;
+  position: relative;
+}
+
+.detalle-img {
+  flex: 1 1 480px;
+  max-width: 480px;
+  min-width: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.detalle-img img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  background: #f3f3f3;
+  display: block;
+}
+
+.detalle-info {
+  flex: 2 1 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  justify-content: center;
+}
+
+.detalle-producto-grande h3 {
+  font-size: 2rem;
+  margin: 0 0 12px 0;
+}
+
+.detalle-producto-grande p {
+  font-size: 1.2rem;
+  margin: 0 0 10px 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 24px;
+  right: 36px;
+  background: transparent;
+  border: none;
+  font-size: 2.2rem;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #e53e3e;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+  flex-wrap: wrap; /* Para que se acomoden en pantallas chicas */
+}
+
+.search-input {
+  flex: 2;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.category-select {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 160px;
+}.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+  flex-wrap: wrap; /* Para que se acomoden en pantallas chicas */
+}
+
+.search-input {
+  flex: 2;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.category-select {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 160px;
+}
