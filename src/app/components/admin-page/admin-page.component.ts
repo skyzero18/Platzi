@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ConService } from '../../service/con.service';
+import { ConService } from '../../service/con1.service';
 import { AuthService } from '../../service/auth.service';
 import { Api } from '../../service/api';
 @Component({

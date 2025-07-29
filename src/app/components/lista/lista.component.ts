@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ConService } from '../../service/con.service';
+import { ConService } from '../../service/con1.service';
 import { FormsModule } from '@angular/forms';
 
 import { Api } from '../../service/api';
