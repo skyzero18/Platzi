@@ -270,7 +270,7 @@ select, input {
 ============================ */
 footer {
     text-align: center;
-    background-color: var(--color-primario);
+    background-color: #1a4a7a;
     color: white;
     padding: 0;
     position: fixed;
