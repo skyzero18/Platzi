@@ -35,7 +35,7 @@
   </label>
   <br />
 
-  <button type="submit" [disabled]="!formulario.valid">
+  <button type="submit" [disabled]="!formulario.valid || isLoading">
     {{ editId ? 'Actualizar producto' : 'Agregar producto' }}
   </button>
 </form>
@@ -65,8 +65,8 @@
 
 <hr />
 
-<h1>Usuarios</h1>
-<h3>Agrega nuevos usuarios</h3>
+<h1>Administradores</h1>
+<h3>Agrega nuevos administradores</h3>
 
 <form [formGroup]="usuarioForm" (ngSubmit)="onCreateUser()" class="formulario-usuario">
   <label>Correo:</label>
@@ -75,5 +75,5 @@
   <label>Contraseña:</label>
   <input formControlName="password" type="password" />
   
-  <button type="submit">Crear usuario</button>
+  <button type="submit">Crear administrador</button>
 </form>

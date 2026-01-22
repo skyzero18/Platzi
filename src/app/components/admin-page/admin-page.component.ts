@@ -17,6 +17,7 @@ export class AdminPageComponent implements OnInit {
   productos: any[] = [];
   categorias: string[] = [];
   editId: string | null = null;
+  isLoading: boolean = false;
 
   usuarioForm: FormGroup;
 
@@ -51,23 +52,34 @@ export class AdminPageComponent implements OnInit {
 
    onSubmit() {
     if (this.formulario.valid) {
+      this.isLoading = true;
       const producto = this.formulario.value;
 
       if (this.editId) {
         this.conService.updateCollection(this.editId, producto)
           .then(() => {
             console.log('Producto actualizado correctamente');
+            alert('¡Producto actualizado con éxito!');
             this.formulario.reset();
             this.editId = null;
+            this.isLoading = false;
           })
-          .catch(error => console.error('Error al actualizar producto:', error));
+          .catch(error => {
+            console.error('Error al actualizar producto:', error);
+            this.isLoading = false;
+          });
       } else {
         this.conService.postCollection(producto)
           .then(() => {
             console.log('Producto agregado correctamente');
+            alert('¡Producto agregado con éxito!');
             this.formulario.reset();
+            this.isLoading = false;
           })
-          .catch(error => console.error('Error al agregar producto:', error));
+          .catch(error => {
+            console.error('Error al agregar producto:', error);
+            this.isLoading = false;
+          });
       }
     } else {
       console.warn('Formulario inválido');
