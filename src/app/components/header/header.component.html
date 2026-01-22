@@ -6,7 +6,7 @@
     </div>
     <div *ngIf="isLoggedIn" class="user-info">
       <span>{{ currentUser?.displayName || currentUser?.email }}</span>
-      <button class="cart-btn" (click)="toggleCart()">Carrito ({{ cartCount }})</button>
+      <button *ngIf="!isRestrictedRoute" class="cart-btn" (click)="toggleCart()">Carrito ({{ cartCount }})</button>
       <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
     </div>
   </div>
@@ -24,7 +24,7 @@
       <input id="password" formControlName="password" type="password" required />
       <button type="submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
     </form>
-    <a routerLink="/registeruser" (click)="closeModal()">Crear cuenta aquí</a>
+    <a *ngIf="!isRegisterRoute" routerLink="/registeruser" (click)="closeModal()">Crear cuenta aquí</a>
   </div>
 </div>
 
@@ -67,7 +67,7 @@
       <button class="remove-btn" (click)="removeItem(item.product.id)">🗑️</button>
     </div>
     <div *ngIf="cartItems.length > 0" class="cart-total">
-      <strong>Total a pagar: {{ totalPrice | currency }}</strong>
+      <strong>Total a pagar: {{ total | currency }}</strong>
     </div>
   </div>
 </div>

@@ -68,6 +68,6 @@ export class CartService {
 
   getTotalPrice(): number {
     const cart = this.getCart();
-    return cart.reduce((total, item) => total + (item.product.precio * item.quantity), 0);
+    return cart.reduce((total, item) => total + (Number(item.product.precio) * item.quantity), 0);
   }
 }

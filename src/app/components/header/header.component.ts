@@ -5,7 +5,8 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { CartService, CartItem } from '../../service/cart.service';
 import { SidebarService } from '../../service/sidebar.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -24,7 +25,10 @@ export class HeaderComponent implements OnInit {
   showLogoutConfirm = false;
   showCart = false;
   cartItems: CartItem[] = [];
-  totalPrice = 0;
+  total = 0;
+  isAdminRoute = false;
+  isRegisterRoute = false;
+  isRestrictedRoute = false;
 
   constructor(
     private authService: AuthService,
@@ -48,12 +52,23 @@ export class HeaderComponent implements OnInit {
     this.cartService.cart$.subscribe(cart => {
       this.cartItems = cart;
       this.cartCount = this.cartService.getTotalItems();
-      this.totalPrice = this.cartService.getTotalPrice();
+      this.total = this.cartService.getTotalPrice();
     });
 
     this.sidebarService.showSidebar$.subscribe(show => {
       this.showCart = show;
     });
+
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+      this.isAdminRoute = this.router.url === '/admin';
+      this.isRegisterRoute = this.router.url === '/registeruser';
+      this.isRestrictedRoute = ['/admin', '/login', '/registeruser'].includes(this.router.url);
+    });
+
+    // Inicializar estados de ruta
+    this.isAdminRoute = this.router.url === '/admin';
+    this.isRegisterRoute = this.router.url === '/registeruser';
+    this.isRestrictedRoute = ['/admin', '/login', '/registeruser'].includes(this.router.url);
   }
 
   openModal() {
