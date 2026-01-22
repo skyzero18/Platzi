@@ -83,10 +83,11 @@ export class AdminPageComponent implements OnInit {
       precio: producto.precio || 0,
       image: producto.image || ''
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onDelete(id: string) {
-    if (confirm('¿Estás seguro que quieres eliminar este producto?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
       this.conService.deleteCollection(id)
         .then(() => console.log('Producto eliminado correctamente'))
         .catch(error => console.error('Error al eliminar producto:', error));
