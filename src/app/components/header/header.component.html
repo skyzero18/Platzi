@@ -6,11 +6,8 @@
     </div>
     <div *ngIf="isLoggedIn" class="user-info">
       <span>{{ currentUser?.displayName || currentUser?.email }}</span>
+      <button class="cart-btn" (click)="toggleCart()">Carrito ({{ cartCount }})</button>
       <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
-      <div class="cart">
-        <span class="cart-icon">🛒</span>
-        <span class="cart-count">0</span>
-      </div>
     </div>
   </div>
 </header>
@@ -36,5 +33,41 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <p>{{ modalMessage }}</p>
     <button (click)="closeSuccessModal()">Aceptar</button>
+  </div>
+</div>
+
+<!-- Logout Confirm Modal -->
+<div *ngIf="showLogoutConfirm" class="modal-overlay" (click)="cancelLogout()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <p>¿Seguro que quieres cerrar sesión?</p>
+    <button class="confirm-btn" (click)="confirmLogout()">Sí</button>
+    <button class="cancel-btn" (click)="cancelLogout()">No</button>
+  </div>
+</div>
+
+<!-- Cart Sidebar -->
+<div *ngIf="showCart" class="cart-sidebar" [class.show]="showCart">
+  <div class="cart-content">
+    <button class="close-btn" (click)="toggleCart()">&times;</button>
+    <h3>Mi Carrito</h3>
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+      Tu carrito está vacío.
+    </div>
+    <div *ngFor="let item of cartItems" class="cart-item">
+      <img [src]="item.product.image" alt="{{ item.product.nombre }}" />
+      <div class="item-details">
+        <span class="item-name">{{ item.product.nombre }}</span>
+        <span class="item-price">{{ item.product.precio | currency }}</span>
+        <div class="quantity-controls">
+          <button (click)="decreaseQuantity(item)">-</button>
+          <span>{{ item.quantity }}</span>
+          <button (click)="increaseQuantity(item)">+</button>
+        </div>
+      </div>
+      <button class="remove-btn" (click)="removeItem(item.product.id)">🗑️</button>
+    </div>
+    <div *ngIf="cartItems.length > 0" class="cart-total">
+      <strong>Total a pagar: {{ totalPrice | currency }}</strong>
+    </div>
   </div>
 </div>

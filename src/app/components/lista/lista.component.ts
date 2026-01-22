@@ -5,6 +5,9 @@ import { ConService } from '../../service/con1.service';
 import { FormsModule } from '@angular/forms';
 
 import { Api } from '../../service/api';
+import { CartService } from '../../service/cart.service';
+import { SidebarService } from '../../service/sidebar.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-lista',
@@ -18,8 +21,10 @@ export class ListaComponent implements OnInit {
   formulario: FormGroup;
   productos: any[] = [];
   selectedProducto: any = null;
+  quantity: number = 1;
+  addedToCart: boolean = false;
 
-  constructor(private conService: ConService, private api: Api) {
+  constructor(private conService: ConService, private api: Api, private cartService: CartService, private sidebarService: SidebarService, public authService: AuthService) {
     this.formulario = new FormGroup({
       nombre: new FormControl(),
       descripcion: new FormControl(),
@@ -102,7 +107,25 @@ get productosFiltrados() {
     });
   } else {
     console.warn('Formulario inválido');
+  }  }
+  selectProducto(producto: any) {
+    this.selectedProducto = producto;
+    this.quantity = 1;
+    this.addedToCart = false;
+    // Cerrar sidebar si está abierto
+    if (this.sidebarService.getShowSidebar()) {
+      this.sidebarService.setShowSidebar(false);
+    }
   }
-}
 
+  addToCart(producto: any) {
+    if (this.authService.isLoggedIn()) {
+      this.cartService.addToCart(producto, this.quantity);
+      this.addedToCart = true;
+      setTimeout(() => {
+        this.selectedProducto = null;
+        this.addedToCart = false;
+      }, 1500);
+    }
+  }
 }

@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
+import { CartService, CartItem } from '../../service/cart.service';
+import { SidebarService } from '../../service/sidebar.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,9 +20,16 @@ export class HeaderComponent implements OnInit {
   loginForm: FormGroup;
   showSuccessModal = false;
   modalMessage = '';
+  cartCount = 0;
+  showLogoutConfirm = false;
+  showCart = false;
+  cartItems: CartItem[] = [];
+  totalPrice = 0;
 
   constructor(
     private authService: AuthService,
+    private cartService: CartService,
+    private sidebarService: SidebarService,
     private fb: FormBuilder,
     private router: Router
   ) {
@@ -34,6 +43,16 @@ export class HeaderComponent implements OnInit {
     this.authService.currentUser.subscribe(user => {
       this.isLoggedIn = !!user;
       this.currentUser = user;
+    });
+
+    this.cartService.cart$.subscribe(cart => {
+      this.cartItems = cart;
+      this.cartCount = this.cartService.getTotalItems();
+      this.totalPrice = this.cartService.getTotalPrice();
+    });
+
+    this.sidebarService.showSidebar$.subscribe(show => {
+      this.showCart = show;
     });
   }
 
@@ -65,6 +84,33 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
+    this.showLogoutConfirm = true;
+  }
+
+  confirmLogout() {
     this.authService.logout();
+    this.showLogoutConfirm = false;
+  }
+
+  cancelLogout() {
+    this.showLogoutConfirm = false;
+  }
+
+  toggleCart() {
+    this.sidebarService.setShowSidebar(!this.showCart);
+  }
+
+  increaseQuantity(item: CartItem) {
+    this.cartService.updateQuantity(item.product.id, item.quantity + 1);
+  }
+
+  decreaseQuantity(item: CartItem) {
+    if (item.quantity > 1) {
+      this.cartService.updateQuantity(item.product.id, item.quantity - 1);
+    }
+  }
+
+  removeItem(productId: string) {
+    this.cartService.removeFromCart(productId);
   }
 }

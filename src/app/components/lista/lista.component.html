@@ -23,7 +23,7 @@
   <div
     *ngFor="let producto of productosFiltrados"
     class="producto-item"
-    (click)="selectedProducto = producto"
+    (click)="selectProducto(producto)"
   >
     <div class="img-box">
       <img [src]="producto.image" alt="{{ producto.nombre }}" />
@@ -46,6 +46,19 @@
       <p>{{ selectedProducto.descripcion }}</p>
       <p><strong>Categoría:</strong> {{ selectedProducto.categoria }}</p>
       <p><strong>Precio:</strong> {{ selectedProducto.precio | currency }}</p>
+      <div *ngIf="authService.isLoggedIn(); else notLoggedIn">
+        <div class="quantity-selector">
+          <label for="quantity">Cantidad:</label>
+          <input type="number" id="quantity" [(ngModel)]="quantity" min="1" max="99" />
+        </div>
+        <button class="add-to-cart-btn" (click)="addToCart(selectedProducto)" [disabled]="addedToCart">
+          <span *ngIf="!addedToCart">🛒 Agregar al Carrito</span>
+          <span *ngIf="addedToCart">✅ Agregado</span>
+        </button>
+      </div>
+      <ng-template #notLoggedIn>
+        <p>Se requiere iniciar sesión para agregar a tus favoritos.</p>
+      </ng-template>
     </div>
   </div>
 </div>
