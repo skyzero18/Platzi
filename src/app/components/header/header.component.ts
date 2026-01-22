@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit {
   isAdminRoute = false;
   isRegisterRoute = false;
   isRestrictedRoute = false;
+  isLoginRoute = false;
 
   constructor(
     private authService: AuthService,
@@ -62,12 +63,14 @@ export class HeaderComponent implements OnInit {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.isAdminRoute = this.router.url === '/admin';
       this.isRegisterRoute = this.router.url === '/registeruser';
+      this.isLoginRoute = this.router.url === '/login';
       this.isRestrictedRoute = ['/admin', '/login', '/registeruser'].includes(this.router.url);
     });
 
     // Inicializar estados de ruta
     this.isAdminRoute = this.router.url === '/admin';
     this.isRegisterRoute = this.router.url === '/registeruser';
+    this.isLoginRoute = this.router.url === '/login';
     this.isRestrictedRoute = ['/admin', '/login', '/registeruser'].includes(this.router.url);
   }
 

@@ -15,6 +15,7 @@ export class RegisterComponent implements OnInit {
   registroForm: FormGroup;
   showModal = false;
   modalMessage = '';
+  hidePassword = true;
 
   constructor(
     private fb: FormBuilder,
@@ -72,5 +73,9 @@ export class RegisterComponent implements OnInit {
     if (this.modalMessage === 'Usuario registrado con éxito') {
       this.router.navigate(['/loginuser']);
     }
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
   }
 }

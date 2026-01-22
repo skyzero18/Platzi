@@ -32,6 +32,12 @@ html, body {
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
 }
 
 /* ============================
@@ -91,6 +97,7 @@ html, body {
   padding: 20px;
   text-align: center;
   flex: 1;
+  min-height: calc(100vh - 70px);
 }
 
 /* ============================

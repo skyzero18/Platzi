@@ -1,7 +1,7 @@
 <header class="header">
   <h1>Platzi Store</h1>
   <div class="header-right">
-    <div *ngIf="!isLoggedIn">
+    <div *ngIf="!isLoggedIn && !isLoginRoute">
       <button class="login-btn" (click)="openModal()">Iniciar Sesión</button>
     </div>
     <div *ngIf="isLoggedIn" class="user-info">
