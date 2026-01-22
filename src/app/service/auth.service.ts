@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
 import { Router } from '@angular/router'
 import { createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Injectable({
@@ -10,10 +11,12 @@ import { createUserWithEmailAndPassword } from '@angular/fire/auth';
 export class AuthService {
 
   userLoggedIn = false;
+  currentUser = new BehaviorSubject<User | null>(null);
 
   constructor(private auth: Auth, private router: Router) {
     onAuthStateChanged(this.auth, (user) => {
       this.userLoggedIn = !!user;
+      this.currentUser.next(user);
     });
   }
 
@@ -31,5 +34,8 @@ export class AuthService {
   }
   isLoggedIn(): boolean {
     return this.userLoggedIn;
+  }
+  getCurrentUser(): User | null {
+    return this.currentUser.value;
   }
 }
