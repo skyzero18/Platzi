@@ -89,13 +89,12 @@ input[type="password"] {
   color: #718096;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-textarea:focus {
-  border-color: #3182ce;
-  outline: none;
+input[type="email"].ng-valid.ng-touched {
+  border-color: #38a169;
+}
+
+input[type="email"].ng-invalid.ng-touched {
+  border-color: #e53e3e;
 }
 
 button[type="submit"] {

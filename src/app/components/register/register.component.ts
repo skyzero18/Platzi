@@ -35,7 +35,8 @@ export class RegisterComponent implements OnInit {
 
   emailValidator(control: any) {
     const email = control.value;
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // Solo aceptar @gmail.com exactamente
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!emailRegex.test(email)) {
       return { invalidEmail: true };
     }
@@ -59,7 +60,13 @@ export class RegisterComponent implements OnInit {
           this.showModal = true;
         });
       }).catch(error => {
-        this.modalMessage = 'Error al registrar usuario';
+        if (error.code === 'auth/invalid-email') {
+          this.modalMessage = 'El formato del correo es incorrecto (debe ser .com u otro dominio válido)';
+        } else if (error.code === 'auth/email-already-in-use') {
+          this.modalMessage = 'Este correo ya está registrado';
+        } else {
+          this.modalMessage = 'Error al registrar usuario: ' + error.message;
+        }
         this.showModal = true;
       });
     } else {
