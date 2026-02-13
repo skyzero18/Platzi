@@ -1,150 +1,169 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core'; 
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms'; 
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs'; // Librería RxJS para manejar flujos de datos (Observables)
 import { ConService } from '../../service/con1.service';
 import { AuthService } from '../../service/auth.service';
 import { Api } from '../../service/api';
+
+/**
+ * INTERFACE: Define la estructura de los datos del producto.
+ * Esto asegura el "Tipado Fuerte" en TypeScript, evitando errores de lógica en el desarrollo.
+ */
+interface Producto {
+  id?: string;
+  nombre: string;
+  descripcion: string;
+  categoria: string;
+  precio: number;
+  image: string;
+}
+
 @Component({
   selector: 'app-admin-page',
+  standalone: true,
   imports: [ CommonModule, ReactiveFormsModule ],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
-export class AdminPageComponent implements OnInit {
+/**
+ * Implementamos OnInit para la carga inicial y OnDestroy para la limpieza de memoria.
+ */
+export class AdminPageComponent implements OnInit, OnDestroy {
 
-  // Formulario reactivo que contiene los campos del producto.
-  // Los Formularios Reactivos (Reactive Forms) dan control explícito
-  // sobre el estado, validación y valores, y permiten programar lógica
-  // de negocio desde el componente.
   formulario: FormGroup;
-  productos: any[] = [];
+  productos: Producto[] = []; 
   categorias: string[] = [];
-  editId: string | null = null; // id del producto en edición (null => crear)
-  isLoading: boolean = false;
-
-  // Formulario específico para crear usuarios desde el panel (solo ejemplo)
+  editId: string | null = null; // Estado para diferenciar entre CREAR y EDITAR
+  isLoading: boolean = false; // Flag para feedback visual de carga
   usuarioForm: FormGroup;
 
-  // Inyección de Dependencias en el constructor:
-  // - `ConService` provee las operaciones CRUD contra Firestore.
-  // - `AuthService` permite gestionar usuarios (Firebase Auth).
-  // - `Api` es un cliente para obtener recursos externos (categorías).
-  // La Inyección de Dependencias favorece la separación de responsabilidades
-  // y facilita pruebas unitarias.
-  constructor(private conService: ConService, private authservice: AuthService, private api: Api) {
+  // SUBSCRIPTION: Centraliza nuestras suscripciones para manejarlas profesionalmente.
+  private subs = new Subscription();
+
+  constructor(
+    private conService: ConService, 
+    private authservice: AuthService, 
+    private api: Api
+  ) {
+    /**
+     * FORMULARIOS REACTIVOS: Controlamos la validación en el lado del cliente.
+     * Esto evita enviar datos nulos o incorrectos a Firebase.
+     */
     this.formulario = new FormGroup({
-      nombre: new FormControl(),
-      descripcion: new FormControl(),
-      categoria: new FormControl(),
-      precio: new FormControl(),
-      image: new FormControl()
+      nombre: new FormControl('', Validators.required),
+      descripcion: new FormControl('', Validators.required),
+      categoria: new FormControl('', Validators.required),
+      precio: new FormControl(0, [Validators.required, Validators.min(1)]),
+      image: new FormControl('', Validators.required)
     });
 
     this.usuarioForm = new FormGroup({
-      email: new FormControl(),
-      password: new FormControl()
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)])
     });
-
   }
 
+  /**
+   * ngOnInit: Se activa al cargar el componente. 
+   * Es el punto donde conectamos los flujos de datos (Observables) de forma ASÍNCRONA.
+   */
   ngOnInit() {
-    // Suscribimos al Observable de `getcollection()` para recibir datos
-    // reactivos desde Firestore. Esto demuestra Asincronismo y uso de RxJS:
-    // cada vez que la colección cambie, `productos` se actualiza.
-    this.conService.getcollection().subscribe(data => {
-      this.productos = data;
-      console.log('Productos cargados:', data);
-    });
+    // Escuchamos cambios en tiempo real desde Firestore (Base de Datos NoSQL)
+    this.subs.add(
+      this.conService.getcollection().subscribe(data => {
+        this.productos = data as Producto[];
+        console.log('Suscripción activa: El DOM se actualizará automáticamente ante cambios');
+      })
+    );
 
-    // Obtener categorías desde la API externa (ejemplo de integración HTTP)
-    // También es una operación asíncrona que devuelve un Observable.
-    this.api.get<any[]>('categories').subscribe(data => {
-      this.categorias = data.map(cat => cat.name);
-      console.log('Categorías desde API:', this.categorias);
-    });
+    // Consumimos categorías desde una API REST externa
+    this.subs.add(
+      this.api.get<any[]>('categories').subscribe(data => {
+        this.categorias = data.map(cat => cat.name);
+      })
+    );
   }
 
-   onSubmit() {
+  /**
+   * ngOnDestroy: Fundamental en una SPA. 
+   * Cerramos los "grifos" de datos para evitar Memory Leaks (fugas de memoria).
+   */
+  ngOnDestroy() {
+    this.subs.unsubscribe(); 
+    console.log('Memoria liberada y flujo de datos cerrado correctamente');
+  }
+
+  /**
+   * onSubmit: Gestiona la creación o actualización de documentos.
+   * Utiliza PROMESAS (.then) para manejar la respuesta única del servidor.
+   */
+  onSubmit() {
     if (this.formulario.valid) {
       this.isLoading = true;
       const producto = this.formulario.value;
 
-      // Lógica del método onSubmit / onEdit:
-      // - Si `editId` está definido => estamos en modo edición (UPDATE).
-      // - Si `editId` es null => estamos en modo creación (CREATE).
-      // Esto es la base de la lógica de negocio de la SPA: un único formulario
-      // que sirve para crear y actualizar recursos según el estado.
       if (this.editId) {
+        // Lógica de UPDATE (Actualización de recurso existente)
         this.conService.updateCollection(this.editId, producto)
           .then(() => {
-            console.log('Producto actualizado correctamente');
-            alert('¡Producto actualizado con éxito!');
-            this.formulario.reset();
-            this.editId = null;
-            this.isLoading = false;
+            alert('Producto actualizado con éxito');
+            this.limpiarFormulario();
           })
-          .catch(error => {
-            console.error('Error al actualizar producto:', error);
+          .catch(err => {
+            console.error(err);
             this.isLoading = false;
           });
       } else {
+        // Lógica de CREATE (Creación de nuevo recurso)
         this.conService.postCollection(producto)
           .then(() => {
-            console.log('Producto agregado correctamente');
-            alert('¡Producto agregado con éxito!');
-            this.formulario.reset();
-            this.isLoading = false;
+            alert('Producto creado con éxito');
+            this.limpiarFormulario();
           })
-          .catch(error => {
-            console.error('Error al agregar producto:', error);
+          .catch(err => {
+            console.error(err);
             this.isLoading = false;
           });
       }
-    } else {
-      console.warn('Formulario inválido');
     }
   }
 
-  // onEdit prepara el formulario para edición:
-  // - Rellena los controles con los valores del producto seleccionado.
-  // - Establece `editId` para que onSubmit sepa que debe actualizar
-  //   en lugar de crear. Es un patrón simple y claro para distinguir
-  //   entre CREATE y UPDATE en la UI.
-  onEdit(producto: any) {
-    this.editId = producto.id;
-    this.formulario.setValue({
-      nombre: producto.nombre || '',
-      descripcion: producto.descripcion || '',
-      categoria: producto.categoria || '',
-      precio: producto.precio || 0,
-      image: producto.image || ''
-    });
+  limpiarFormulario() {
+    this.formulario.reset();
+    this.editId = null;
+    this.isLoading = false;
+  }
+
+  /**
+   * onEdit: Carga los datos del objeto seleccionado en el formulario.
+   * Facilita la experiencia de usuario (UX) mediante Data Binding.
+   */
+  onEdit(producto: Producto) {
+    this.editId = producto.id || null;
+    this.formulario.patchValue(producto);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  onDelete(id: string) {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+  /**
+   * onDelete: Elimina un nodo de la colección de Firestore.
+   * Se ajustó para aceptar 'string | undefined' y evitar errores de tipado.
+   */
+  onDelete(id: string | undefined) {
+    if (id && confirm('¿Seguro que deseas eliminar este producto?')) {
       this.conService.deleteCollection(id)
-        .then(() => console.log('Producto eliminado correctamente'))
-        .catch(error => console.error('Error al eliminar producto:', error));
+        .then(() => console.log('Documento eliminado. El Observable actualizará la vista.'));
     }
   }
 
-    onCreateUser() {
+  onCreateUser() {
     const { email, password } = this.usuarioForm.value;
-    if (email && password) {
+    if (this.usuarioForm.valid) {
       this.authservice.createUser(email, password)
         .then(() => {
-          console.log('Usuario creado correctamente');
+          alert('Administrador creado en Firebase Auth');
           this.usuarioForm.reset();
-        })
-        .catch(error => {
-          console.error('Error al crear usuario:', error.message);
         });
-    } else {
-      console.warn('Datos de usuario incompletos');
     }
   }
 }
-
