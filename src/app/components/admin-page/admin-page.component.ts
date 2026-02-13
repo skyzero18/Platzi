@@ -13,14 +13,25 @@ import { Api } from '../../service/api';
 })
 export class AdminPageComponent implements OnInit {
 
+  // Formulario reactivo que contiene los campos del producto.
+  // Los Formularios Reactivos (Reactive Forms) dan control explícito
+  // sobre el estado, validación y valores, y permiten programar lógica
+  // de negocio desde el componente.
   formulario: FormGroup;
   productos: any[] = [];
   categorias: string[] = [];
-  editId: string | null = null;
+  editId: string | null = null; // id del producto en edición (null => crear)
   isLoading: boolean = false;
 
+  // Formulario específico para crear usuarios desde el panel (solo ejemplo)
   usuarioForm: FormGroup;
 
+  // Inyección de Dependencias en el constructor:
+  // - `ConService` provee las operaciones CRUD contra Firestore.
+  // - `AuthService` permite gestionar usuarios (Firebase Auth).
+  // - `Api` es un cliente para obtener recursos externos (categorías).
+  // La Inyección de Dependencias favorece la separación de responsabilidades
+  // y facilita pruebas unitarias.
   constructor(private conService: ConService, private authservice: AuthService, private api: Api) {
     this.formulario = new FormGroup({
       nombre: new FormControl(),
@@ -30,20 +41,24 @@ export class AdminPageComponent implements OnInit {
       image: new FormControl()
     });
 
-  this.usuarioForm = new FormGroup({ // ✅ AGREGADO
-    email: new FormControl(),
-    password: new FormControl()
-  });
+    this.usuarioForm = new FormGroup({
+      email: new FormControl(),
+      password: new FormControl()
+    });
 
   }
 
   ngOnInit() {
+    // Suscribimos al Observable de `getcollection()` para recibir datos
+    // reactivos desde Firestore. Esto demuestra Asincronismo y uso de RxJS:
+    // cada vez que la colección cambie, `productos` se actualiza.
     this.conService.getcollection().subscribe(data => {
       this.productos = data;
       console.log('Productos cargados:', data);
     });
 
-    // Obtener categorías desde la API externa
+    // Obtener categorías desde la API externa (ejemplo de integración HTTP)
+    // También es una operación asíncrona que devuelve un Observable.
     this.api.get<any[]>('categories').subscribe(data => {
       this.categorias = data.map(cat => cat.name);
       console.log('Categorías desde API:', this.categorias);
@@ -55,6 +70,11 @@ export class AdminPageComponent implements OnInit {
       this.isLoading = true;
       const producto = this.formulario.value;
 
+      // Lógica del método onSubmit / onEdit:
+      // - Si `editId` está definido => estamos en modo edición (UPDATE).
+      // - Si `editId` es null => estamos en modo creación (CREATE).
+      // Esto es la base de la lógica de negocio de la SPA: un único formulario
+      // que sirve para crear y actualizar recursos según el estado.
       if (this.editId) {
         this.conService.updateCollection(this.editId, producto)
           .then(() => {
@@ -86,6 +106,11 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
+  // onEdit prepara el formulario para edición:
+  // - Rellena los controles con los valores del producto seleccionado.
+  // - Establece `editId` para que onSubmit sepa que debe actualizar
+  //   en lugar de crear. Es un patrón simple y claro para distinguir
+  //   entre CREATE y UPDATE en la UI.
   onEdit(producto: any) {
     this.editId = producto.id;
     this.formulario.setValue({

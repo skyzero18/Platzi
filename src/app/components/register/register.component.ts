@@ -35,12 +35,24 @@ export class RegisterComponent implements OnInit {
 
   emailValidator(control: any) {
     const email = control.value;
-    // Solo aceptar @gmail.com exactamente
+    // Validador personalizado del correo electrónico.
+    // Regex explicado:
+    // - `^[a-zA-Z0-9._%+-]+@gmail\.com$`:
+    //    ^  => ancla de inicio de cadena
+    //    [a-zA-Z0-9._%+-]+ => uno o más caracteres válidos en la parte local
+    //    @gmail\.com => dominio exactamente "gmail.com" (el punto está escapado)
+    //    $  => ancla de fin de cadena (garantiza que no haya texto adicional)
+    // El símbolo `$` al final es crítico: obliga a que la cadena termine en
+    // `@gmail.com`, evitando coincidencias parciales como "user@gmail.com.evil".
+    // Esto mejora la integridad antes de enviar datos a Firebase Authentication,
+    // reduciendo entradas inválidas en la base de usuarios.
     const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
     if (!emailRegex.test(email)) {
       return { invalidEmail: true };
     }
-    // No permitir comas, acentos, caracteres especiales
+
+    // Rechaza caracteres con acentos, ñ o comas para evitar problemas de normalización
+    // y entradas inválidas que Firebase podría rechazar o almacenar de forma inesperada.
     const invalidChars = /[áéíóúÁÉÍÓÚñÑ,]/;
     if (invalidChars.test(email)) {
       return { invalidChars: true };

@@ -1,3 +1,7 @@
+// Este archivo define las rutas de la Single Page Application (SPA).
+// En una SPA la navegación entre 'páginas' no recarga el navegador; Angular
+// intercambia componentes en el DOM según la ruta (enrutamiento declarativo).
+// `Routes` declara qué componente se monta para cada URL.
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './components/home-page/home-page.component';
 import { LoginPageComponent } from './components/login-page/login-page.component';  
